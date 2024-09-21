@@ -12,6 +12,7 @@ import { AuthenticationController } from './auth.controller';
 import { UsersService } from './user.service';
 import { JwtStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import { TransactionsController } from './tranasactions.controller';
 
 @Module({
   imports: [
@@ -40,7 +41,12 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     TypeOrmModule.forFeature([Transaction, PlAccount, User]),
   ],
-  controllers: [AppController, CsvController, AuthenticationController],
+  controllers: [
+    AppController,
+    CsvController,
+    AuthenticationController,
+    TransactionsController,
+  ],
   providers: [
     AppService,
     CsvUploadService,

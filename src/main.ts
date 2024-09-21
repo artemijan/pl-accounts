@@ -34,6 +34,24 @@ async function bootstrap() {
           this._blocks[name] = template;
           return null;
         },
+        gt: (a, b) => {
+          return a > b;
+        },
+        eq: (a, b) => {
+          return a === b;
+        },
+        lt: (a, b) => {
+          return a < b;
+        },
+        range: (start, end) => {
+          const result = [];
+          for (let i = start; i <= end; i++) {
+            result.push(i);
+          }
+          return result;
+        },
+        dec: (value) => value - 1,
+        inc: (value) => value + 1,
         block: function (name) {
           return this._blocks && this._blocks[name] ? this._blocks[name] : '';
         },

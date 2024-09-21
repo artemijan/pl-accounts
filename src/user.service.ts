@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './models.entity';
+import { Transaction, User } from './models.entity';
 import CreateUserDto from './createUser.dto';
 
 @Injectable()
@@ -9,6 +9,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
   ) {}
 
   async getByUsername(username: string) {
@@ -17,6 +19,24 @@ export class UsersService {
       return user;
     }
     return null;
+  }
+
+  async getUserTransactions(
+    user: User,
+    page?: number,
+    pageSize?: number,
+  ): Promise<{ transactions: Transaction[]; total: number }> {
+    const res = await this.transactionRepository.findAndCount({
+      where: {
+        user: { username: user.username },
+      },
+      skip: (page - 1) * pageSize, // Calculate how many records to skip
+      take: pageSize,
+      order: {
+        id: 'ASC', // Order by date ascending (change to 'DESC' for descending)
+      },
+    });
+    return { transactions: res[0], total: res[1] };
   }
 
   async getById(id: number) {
