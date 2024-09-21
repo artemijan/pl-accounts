@@ -31,7 +31,6 @@ export class AuthenticationController {
     return response.redirect('/auth/login');
   }
 
-  @Render('login')
   @Post('login')
   async logIn(
     @Body() body: CreateUserDto,
@@ -40,9 +39,9 @@ export class AuthenticationController {
     const user =
       await this.authenticationService.getOrCreateAuthenticatedUser(body);
     if (!user) {
-      return {
+      return response.render('login', {
         error: 'Wrong credentials',
-      };
+      });
     }
     const token = this.authenticationService.generateToken(user);
     response.cookie('jwt', token, {

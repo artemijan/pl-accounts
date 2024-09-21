@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import csv from 'csv-parser';
-import * as fs from 'fs';
+import * as csv from 'csv-parser';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Transaction } from './models.entity';
+import { Transaction, User } from './models.entity';
 import { Repository } from 'typeorm';
+import { Readable } from 'stream';
 
 @Injectable()
 export class CsvUploadService {
@@ -12,16 +12,21 @@ export class CsvUploadService {
     private readonly transactionRepo: Repository<Transaction>,
   ) {}
 
-  async processCSV(file: Express.Multer.File): Promise<any> {
+  async processCSV(file: Express.Multer.File, user: User): Promise<any> {
     const results: Partial<Transaction>[] = [];
+
     return new Promise((resolve, reject) => {
-      fs.createReadStream(file.path)
+      const readableStream = new Readable();
+      readableStream.push(file.buffer); // Push the buffer into the stream
+      readableStream.push(null); // Indicate the end of the stream
+      readableStream
         .pipe(csv())
         .on('data', (data) => {
           // Map CSV data to Transaction entity
           const transaction: Partial<Transaction> = {
             date: data.Date,
             plAccount: data['PL Account'],
+            user,
             amount: parseFloat(data.Amount),
             description: data.Description || null,
             counterparty: data.Counterparty || null,

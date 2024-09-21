@@ -1,5 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: User; // Extend the Request interface to include user
+  }
+}
 
 @Entity()
 export class PlAccount {
@@ -11,6 +23,27 @@ export class PlAccount {
 
   @Column()
   bestPracticeName: string;
+}
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  public id?: number;
+
+  @Column({ unique: true })
+  public username: string;
+
+  @Column()
+  @Exclude()
+  public password: string;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user) // Set up the relation
+  transactions: Transaction[];
+
+  constructor(id: number, username: string) {
+    this.id = id;
+    this.username = username;
+  }
 }
 
 @Entity()
@@ -32,17 +65,7 @@ export class Transaction {
 
   @Column({ nullable: true })
   counterparty: string;
-}
 
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  public id?: number;
-
-  @Column({ unique: true })
-  public username: string;
-
-  @Column()
-  @Exclude()
-  public password: string;
+  @ManyToOne(() => User, (user) => user.transactions)
+  user: User;
 }
