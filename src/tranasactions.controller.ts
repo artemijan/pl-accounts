@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Render, Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from './loginWithCredentialsGuard.guard'; // Correct import
 import { Request } from 'express';
 import { UsersService } from './user.service';
+import { JwtAuthGuard } from './jwtAuth.guard';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -41,7 +41,6 @@ export class TransactionsController {
       pagination = Array.from({ length: totalPages }, (_, i) => i + 1); // Show all pages
     }
     return {
-      user: req.user,
       size: pageSize,
       page: pageNumber,
       pagination,
