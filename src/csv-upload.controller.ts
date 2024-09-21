@@ -35,7 +35,8 @@ export class CsvController {
     await this.csvService.processCSV(file, req.user);
     return response.render('index', {
       user: req.user,
-      message: 'Upload successful, you can upload more files',
+      message:
+        'Upload successful, you can upload more files, or go and check uploaded transactions <a href="/transactions">here</a>',
     });
   }
 }
