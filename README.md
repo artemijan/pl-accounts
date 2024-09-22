@@ -51,5 +51,15 @@ permission system.
   -F "file=@best_practices_accounts.csv"
   ```
 
+In order to upload transactions:
+
+```bash
+curl -X POST http://localhost:3000/csv/transactions \
+-H 'Content-Type: multipart/form-data' \
+-H 'Cookie: jwt={token}; Max-Age=3600; Path=/; Expires=Sun, 22 Sep 2024 17:53:12 GMT; HttpOnly' \
+-F "file=@transactions1.csv"
+```
+
+
 Everything else should be OK to do from the FE.
 
