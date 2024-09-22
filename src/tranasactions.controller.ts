@@ -49,4 +49,16 @@ export class TransactionsController {
       totalPages,
     };
   }
+
+  @Get('report')
+  @UseGuards(JwtAuthGuard)
+  async transactionsReport() {
+    const monthly = await this.userService.getMonthlyReport();
+    const topFive = await this.userService.getTopPLAccountsLastMonth(5);
+    // todo implement dto for these to be used in FE/BE
+    return {
+      monthly,
+      topFive,
+    };
+  }
 }
