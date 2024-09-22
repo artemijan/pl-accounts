@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Post,
   Res,
@@ -23,6 +22,7 @@ export class AuthenticationController {
   @Get('logout')
   async logout(@Res() response: Response) {
     response.cookie('jwt', null);
+    response.send({});
   }
 
   @HttpCode(HttpStatus.OK)
@@ -31,16 +31,16 @@ export class AuthenticationController {
     const user =
       await this.authenticationService.getOrCreateAuthenticatedUser(body);
     if (!user) {
-      return new HttpException(
-        'Incorrect username or password',
-        HttpStatus.UNAUTHORIZED,
-      );
+      response.sendStatus(HttpStatus.UNAUTHORIZED);
+      return;
     }
+    response.setHeader('Content-Type', 'application/json');
     const token = this.authenticationService.generateToken(user);
     response.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Set `secure: true` in production
       maxAge: 60 * 60 * 1000, // 1 hour expiration
     });
+    response.send({ id: user.id, username: user.username });
   }
 }

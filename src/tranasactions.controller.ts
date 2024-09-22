@@ -1,13 +1,14 @@
-import { Controller, Get, Query, Render, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './user.service';
 import { JwtAuthGuard } from './jwtAuth.guard';
+import { plainToInstance } from 'class-transformer';
+import { TransactionDto } from './dto/transaction';
 
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly userService: UsersService) {}
 
-  @Render('transactions')
   @Get()
   @UseGuards(JwtAuthGuard)
   async transactions(@Req() req: Request, @Query('page') page: string = '1') {
@@ -44,7 +45,7 @@ export class TransactionsController {
       size: pageSize,
       page: pageNumber,
       pagination,
-      transactions: response.transactions,
+      transactions: plainToInstance(TransactionDto, response.transactions),
       totalPages,
     };
   }

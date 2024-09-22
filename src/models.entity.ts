@@ -21,8 +21,11 @@ export class PlAccount {
   @Column()
   originalName: string;
 
-  @Column()
+  @Column({ unique: true })
   bestPracticeName: string;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.plAccount) // Set up the relation
+  transactions: Transaction[];
 }
 
 @Entity()
@@ -54,8 +57,8 @@ export class Transaction {
   @Column()
   date: string;
 
-  @Column()
-  plAccount: string;
+  @ManyToOne(() => PlAccount, (acc) => acc.transactions, { nullable: true })
+  plAccount: PlAccount;
 
   @Column('decimal')
   amount: number;

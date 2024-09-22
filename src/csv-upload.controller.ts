@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
   Req,
@@ -19,14 +20,14 @@ export class CsvController {
   constructor(private readonly csvService: CsvUploadService) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post()
+  @Post('transactions')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
     }),
   )
-  async uploadFile(
+  async uploadTransactions(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
   ) {
@@ -34,6 +35,33 @@ export class CsvController {
       // todo verify it's csv
       throw new Error('No file uploaded');
     }
-    await this.csvService.processCSV(file, req.user);
+    await this.csvService.processCSVTransactions(file, req.user);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('pl-accounts')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  async uploadBestPracticePLAccounts(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ) {
+    if (!file) {
+      // todo verify it's csv
+      throw new Error('No file uploaded');
+    }
+    if (req.user.username == 'admin') {
+      // todo, need permission system (for the future)
+      await this.csvService.processCSVBestPracticesPLAccounts(file);
+      return;
+    }
+    return new HttpException(
+      'This is only for admin users',
+      HttpStatus.FORBIDDEN,
+    );
   }
 }
