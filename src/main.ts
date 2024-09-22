@@ -9,7 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3001'], // Replace with the domain you want to whitelist
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true, // Set this if you need to allow cookies or authorization headers
+  });
   // Enable session handling
   app.use(
     session({
