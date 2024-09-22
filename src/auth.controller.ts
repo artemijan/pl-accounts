@@ -6,12 +6,15 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationService } from './auth.service';
 import CreateUserDto from './createUser.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { JwtAuthGuard } from './jwtAuth.guard';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,6 +26,13 @@ export class AuthenticationController {
   async logout(@Res() response: Response) {
     response.cookie('jwt', null);
     response.send({});
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @Get('userInfo')
+  async info(@Req() req: Request) {
+    return { user: req.user };
   }
 
   @HttpCode(HttpStatus.OK)
