@@ -28,6 +28,8 @@
 This is an assignment for uploading transactions to the system and mapping them on existing list of best practices PL
 accounts.
 
+I suppose you will find package.json file to check what scrips you can use to run the app (do npm install before it).
+
 ### Please be aware for testing purposes I enabled automatic creation of accounts while logging in.
 
 In order to upload best practices you must have an account with username `admin`. This is temporary, before I implement
